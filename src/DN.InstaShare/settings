@@ -1,0 +1,26 @@
+﻿{
+	"standardKeywords" : [
+		"dldadventures",
+		"diverslife",
+		"scuba",
+		"canon7dmarkii",
+		"ikelite",
+		"uw",
+		"uwlife",
+		"uwpics",
+		"uwphotography",
+		"underwater",
+		"underwaterlife",
+		"underwaterpics",
+		"underwaterphoto",
+		"underwaterphotography",
+		"scubadiving",
+		"scubadive",
+		"scubalife",
+		"padi",
+		"divepix"
+	],
+	"excludedKeywords" : [
+		"flickr"
+	]
+}

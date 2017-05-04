@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using MetadataExtractor;
+using Newtonsoft.Json;
 
 namespace DN.InstaShare
 {
@@ -15,34 +17,8 @@ namespace DN.InstaShare
         [STAThread]
         static void Main(string[] args)
         {
-            var standardKeywords = new List<string>()
-            {
-                "dldadventures",
-                "diverslife",
-                "scuba",
-                "canon7dmarkii",
-                "ikelite",
-                "uw",
-                "uwlife",
-                "uwpics",
-                "uwphotography",
-                "underwater",
-                "underwaterlife",
-                "underwaterpics",
-                "underwaterphoto",
-                "underwaterphotography",
-                "scubadiving",
-                "scubadive",
-                "scubalife",
-                "padi",
-                "divepix"
-            };
-
-            var ignoredKeywords = new List<string>()
-            {
-                "flickr"
-            };
-
+            var settings = GetSettings();
+            
             var file = GetFilePathFromArgsOrClipboard(args);
 
             if (string.IsNullOrWhiteSpace(file))
@@ -63,13 +39,13 @@ namespace DN.InstaShare
             var caption = ContentWithNewLineIfNotNull(tags.FirstOrDefault(t => t.Name == "Caption/Abstract" || t.Name == "Windows XP Subject")?.Description);
             var keywords = (tags.FirstOrDefault(t => t.Name == "Keywords" || t.Name == "Windows XP Keywords")?.Description ?? "")
                 .Replace(" ", "").Split(new char[] { ';' })
-                .Except(ignoredKeywords)
-                .Union(standardKeywords, StringComparer.InvariantCultureIgnoreCase);
+                .Except(settings.ExcludedKeywords, StringComparer.InvariantCultureIgnoreCase)
+                .Union(settings.StandardKeywords, StringComparer.InvariantCultureIgnoreCase);
 
             var hashtags = "#" + string.Join(" #", keywords).Trim();
 
             var clipText = $"{title}{caption}{hashtags}";
-            System.Windows.Clipboard.SetText(clipText);
+            Clipboard.SetText(clipText);
 
             Process.Start(file);
 
@@ -78,13 +54,22 @@ namespace DN.InstaShare
 
         }
 
+        private static Settings GetSettings()
+        {
+            var appPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            var configPath = Path.Combine(Path.GetDirectoryName(appPath), "settings");
+            if (File.Exists(configPath))
+            {
+                var data = File.ReadAllText(configPath);
+                return JsonConvert.DeserializeObject<Settings>(data);
+            }
+            return new Settings();
+        }
+
 
         private static void ShowMessageAndWaitForUser(string message)
         {
             MessageBox.Show(message);
-            //Console.WriteLine(message);
-            //Console.WriteLine("Press any key to continue...");
-            //Console.ReadKey();
         }
 
         private static IReadOnlyList<Tag> GetExifTags(string file)
@@ -99,13 +84,12 @@ namespace DN.InstaShare
 
             if (directory != null) return directory.Tags;
 
-            //Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(directories));
             return null;
         }
 
         private static string GetFilePathFromArgsOrClipboard(string[] args)
         {
-            var clipboardFiles = System.Windows.Clipboard.GetFileDropList();
+            var clipboardFiles = Clipboard.GetFileDropList();
             return args?.Length > 0 ? args[0] : clipboardFiles.Count > 0 ? clipboardFiles[0] : string.Empty;
         }
 
