@@ -79,8 +79,8 @@ namespace DN.InstaShare
 
             var directories = ImageMetadataReader.ReadMetadata(file);
 
-            var directory = directories.FirstOrDefault(d => d.Name == windowsExifDirectoryName) 
-                ?? directories.FirstOrDefault(d => d.Name == iptcExifDirectoryName);
+            var directory = directories.FirstOrDefault(d => d.Name == iptcExifDirectoryName) 
+                ?? directories.FirstOrDefault(d => d.Name == windowsExifDirectoryName);
 
             if (directory != null) return directory.Tags;
 
