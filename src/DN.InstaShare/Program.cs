@@ -45,7 +45,9 @@ namespace DN.InstaShare
             var hashtags = "#" + string.Join(" #", keywords).Trim();
 
             var clipText = $"{title}{caption}{hashtags}";
-            Clipboard.SetDataObject(clipText);
+			Clipboard.Clear();
+			Clipboard.SetDataObject(clipText);
+			Clipboard.SetText(clipText);
 
             Process.Start(file);
 
