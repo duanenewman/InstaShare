@@ -35,16 +35,20 @@ namespace DN.InstaShare
                 return;
             }
 
-            var title = ContentWithNewLineIfNotNull(tags.FirstOrDefault(t => t.Name == "Object Name" || t.Name == "Windows XP Title")?.Description);
-            var caption = ContentWithNewLineIfNotNull(tags.FirstOrDefault(t => t.Name == "Caption/Abstract" || t.Name == "Windows XP Subject")?.Description);
+            var title = ContentWithNewLineIfNotNull(tags.FirstOrDefault(t => t.Name == "Object Name" || t.Name == "Windows XP Title")?.Description, settings.Separater);
+            var caption = ContentWithNewLineIfNotNull(tags.FirstOrDefault(t => t.Name == "Caption/Abstract" || t.Name == "Windows XP Subject")?.Description, settings.Separater);
             var keywords = (tags.FirstOrDefault(t => t.Name == "Keywords" || t.Name == "Windows XP Keywords")?.Description ?? "")
                 .Replace(" ", "").Split(new char[] { ';' })
                 .Except(settings.ExcludedKeywords, StringComparer.InvariantCultureIgnoreCase)
                 .Union(settings.StandardKeywords, StringComparer.InvariantCultureIgnoreCase);
 
-            var hashtags = "#" + string.Join(" #", keywords).Trim();
+            var hashtags = !keywords.Any() 
+	            ? string.Empty 
+	            : "#" + string.Join(" #", keywords).Trim();
 
-            var clipText = $"{title}{caption}{hashtags}";
+	        var photographer = CreditWithNewLineIfNotNull(settings.Photographer, settings.Separater);
+
+			var clipText = $"{title}{caption}{photographer}{hashtags} {settings.Footer}".Trim();
 			Clipboard.Clear();
 			Clipboard.SetDataObject(clipText);
 			Clipboard.SetText(clipText);
@@ -95,11 +99,26 @@ namespace DN.InstaShare
             return args?.Length > 0 ? args[0] : clipboardFiles.Count > 0 ? clipboardFiles[0] : string.Empty;
         }
 
-        private static string ContentWithNewLineIfNotNull(string content)
+        private static string ContentWithNewLineIfNotNull(string content, string separater)
         {
             if (string.IsNullOrWhiteSpace(content)) return string.Empty;
 
-            return content.Trim() + Environment.NewLine;
+	        var separaterWithNewLine = string.IsNullOrWhiteSpace(separater)
+		        ? string.Empty
+		        : $"{Environment.NewLine}{separater}";
+
+			return $"{content.Trim()}{separaterWithNewLine}{Environment.NewLine}";
+        }
+
+        private static string CreditWithNewLineIfNotNull(string credit, string separater)
+        {
+            if (string.IsNullOrWhiteSpace(credit)) return string.Empty;
+
+	        var separaterWithNewLine = string.IsNullOrWhiteSpace(separater)
+		        ? string.Empty
+		        : $"{Environment.NewLine}{separater}";
+
+			return $"📷 {credit.Trim()}{separaterWithNewLine}{Environment.NewLine}";
         }
     }
 }

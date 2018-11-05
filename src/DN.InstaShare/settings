@@ -1,26 +1,29 @@
 ﻿{
-	"standardKeywords" : [
-		"dldadventures",
-		"diverslife",
-		"scuba",
-		"canon7dmarkii",
-		"ikelite",
-		"uw",
-		"uwlife",
-		"uwpics",
-		"uwphotography",
-		"underwater",
-		"underwaterlife",
-		"underwaterpics",
-		"underwaterphoto",
-		"underwaterphotography",
-		"scubadiving",
-		"scubadive",
-		"scubalife",
-		"padi",
-		"divepix"
-	],
-	"excludedKeywords" : [
-		"flickr"
-	]
+  "footer": "@dldadventures",
+  "separater": " .. ",
+  "photographer": "@duanenewman",
+  "standardKeywords": [
+    "dldadventures",
+    "uwphotography",
+    "diverslife",
+    "uwpics",
+    "scubalife",
+    "scuba",
+    "divepix",
+    "padi",
+    "uw",
+    "uwlife",
+    "underwater",
+    "underwaterlife",
+    "underwaterpics",
+    "underwaterphoto",
+    "underwaterphotography",
+    "scubadiving",
+    "scubadive"
+  ],
+  "excludedKeywords": [
+    "flickr",
+    "ig",
+    "instagram"
+  ]
 }
