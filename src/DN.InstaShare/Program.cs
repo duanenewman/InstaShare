@@ -35,12 +35,14 @@ namespace DN.InstaShare
                 return;
             }
 
+			//fallback to "Windows XP *" exif tags allows for exif entered in explorer, rather than IPTC generated through Lightroom, etc.
             var title = ContentWithNewLineIfNotNull(tags.FirstOrDefault(t => t.Name == "Object Name" || t.Name == "Windows XP Title")?.Description, settings.Separater);
             var caption = ContentWithNewLineIfNotNull(tags.FirstOrDefault(t => t.Name == "Caption/Abstract" || t.Name == "Windows XP Subject")?.Description, settings.Separater);
             var keywords = (tags.FirstOrDefault(t => t.Name == "Keywords" || t.Name == "Windows XP Keywords")?.Description ?? "")
                 .Replace(" ", "").Split(new char[] { ';' })
                 .Except(settings.ExcludedKeywords, StringComparer.InvariantCultureIgnoreCase)
-                .Union(settings.StandardKeywords, StringComparer.InvariantCultureIgnoreCase);
+                .Union(settings.StandardKeywords, StringComparer.InvariantCultureIgnoreCase)
+	            .ToArray();
 
             var hashtags = !keywords.Any() 
 	            ? string.Empty 
@@ -88,9 +90,7 @@ namespace DN.InstaShare
             var directory = directories.FirstOrDefault(d => d.Name == iptcExifDirectoryName) 
                 ?? directories.FirstOrDefault(d => d.Name == windowsExifDirectoryName);
 
-            if (directory != null) return directory.Tags;
-
-            return null;
+            return directory?.Tags;
         }
 
         private static string GetFilePathFromArgsOrClipboard(string[] args)
